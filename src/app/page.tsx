@@ -24,11 +24,11 @@ export default function Home() {
     setTimeout(() => {
       setProfiles(prevProfiles => {
         const newProfiles = prevProfiles.filter((_, index) => index !== currentProfile);
-        setCurrentProfile(0); // Reset to the first profile in the new array
+        setCurrentProfile(0);
         return newProfiles;
       });
       setDirection(null);
-    }, 300); // Wait for animation to finish before switching
+    }, 300);
   };
 
   return (
@@ -39,7 +39,7 @@ export default function Home() {
           .map((profile, index) => (
             <motion.div
               key={profile.id}
-              drag={index === 0 ? "x" : false} // Drag only the top card
+              drag={index === 0 ? "x" : false} 
               dragConstraints={{ left: 0, right: 0 }}
               dragElastic={1}
               onDragEnd={index === 0 ? (e, { offset }) => {
@@ -52,9 +52,9 @@ export default function Home() {
               } : undefined}
               className={`absolute w-full h-full bg-white shadow-lg rounded-lg cursor-grab active:cursor-grabbing`}
               style={{
-                zIndex: profiles.length - index, // Stack cards on top of each other
-                transform: `scale(${1 - index * 0.05}) translateY(${index * 15}px)`, // Shrink, offset, and rotate the top card
-                opacity: index === 0 ? 1 : 0.8, // Slightly fade out the background cards
+                zIndex: profiles.length - index, 
+                transform: `scale(${1 - index * 0.05}) translateY(${index * 15}px)`,
+                opacity: index === 0 ? 1 : 0.8,
               }}
             >
               <div className={`relative w-full h-full shadow-lg rounded-lg`}>
