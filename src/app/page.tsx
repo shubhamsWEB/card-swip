@@ -1,101 +1,81 @@
-import Image from "next/image";
+'use client';
+import Image from 'next/image';
+import { motion } from 'framer-motion';
+import { useState } from 'react';
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="https://nextjs.org/icons/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+  const [profiles, setProfiles] = useState([
+    { id: 1, name: 'John Doe', age: 28, job: 'Software Developer', image: '/image.jpg' },
+    { id: 2, name: 'Jane Smith', age: 25, job: 'UX Designer', image: '/image.jpg' },
+    { id: 3, name: 'Mike Johnson', age: 30, job: 'Data Scientist', image: '/image.jpg' },
+  ]);
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="https://nextjs.org/icons/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+  const [currentProfile, setCurrentProfile] = useState(0);
+  const [direction, setDirection] = useState<'left' | 'right' | null>(null);
+
+  const handleSwipe = (swipeDirection: 'left' | 'right') => {
+    if (swipeDirection === 'right') {
+      console.log('🚀Liked profile:', profiles[currentProfile].name);
+    } else {
+      console.log('🚀Passed on profile:', profiles[currentProfile].name);
+    }
+    setDirection(swipeDirection);
+    setTimeout(() => {
+      setProfiles(prevProfiles => {
+        const newProfiles = prevProfiles.filter((_, index) => index !== currentProfile);
+        setCurrentProfile(0); // Reset to the first profile in the new array
+        return newProfiles;
+      });
+      setDirection(null);
+    }, 300); // Wait for animation to finish before switching
+  };
+
+  return (
+    <div className="flex justify-center items-center h-screen">
+      <div className="relative w-64 h-80 shadow-lg rounded-lg">
+        {profiles.length > 0 && profiles
+          .slice(currentProfile, profiles.length)
+          .map((profile, index) => (
+            <motion.div
+              key={profile.id}
+              drag={index === 0 ? "x" : false} // Drag only the top card
+              dragConstraints={{ left: 0, right: 0 }}
+              dragElastic={1}
+              onDragEnd={index === 0 ? (e, { offset }) => {
+                const swipe = offset.x;
+                if (swipe < -140) {
+                  handleSwipe('left');
+                } else if (swipe > 140) {
+                  handleSwipe('right');
+                }
+              } : undefined}
+              className={`absolute w-full h-full bg-white shadow-lg rounded-lg cursor-grab active:cursor-grabbing`}
+              style={{
+                zIndex: profiles.length - index, // Stack cards on top of each other
+                transform: `scale(${1 - index * 0.05}) translateY(${index * 15}px)`, // Shrink, offset, and rotate the top card
+                opacity: index === 0 ? 1 : 0.8, // Slightly fade out the background cards
+              }}
+            >
+              <div className={`relative w-full h-full shadow-lg rounded-lg`}>
+                <Image
+                  src={profile.image}
+                  alt={`${profile.name}'s profile`}
+                  layout="fill"
+                  objectFit="cover"
+                  draggable="false"
+                  style={{ userSelect: 'none' }}
+                />
+                <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black to-transparent">
+                  <h2 className="text-white text-xl font-bold">
+                    {profile.name}, {profile.age}
+                  </h2>
+                    <p className="text-white text-sm">{profile.job}</p>
+                </div>
+              </div>
+            </motion.div>
+          ))}
+        {profiles.length === 0 && <div className='absolute top-0 left-0 w-full h-full flex justify-center items-center'>No profiles found</div>}
+      </div>
     </div>
   );
 }
