@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 'use client';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
@@ -9,8 +10,8 @@ export default function Home() {
     { id: 2, name: 'Jane Smith', age: 25, job: 'UX Designer', image: '/image.jpg' },
     { id: 3, name: 'Mike Johnson', age: 30, job: 'Data Scientist', image: '/image.jpg' },
   ]);
-
   const [currentProfile, setCurrentProfile] = useState(0);
+
   const [direction, setDirection] = useState<'left' | 'right' | null>(null);
 
   const handleSwipe = (swipeDirection: 'left' | 'right') => {
